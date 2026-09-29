@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DuoMath — Matemáticas 6º Primaria</title>
+  
+  <!-- Tipografía redondeada estilo Duolingo -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+  <!-- Barra de Navegación Superior -->
+  <header class="top-nav">
+    <div class="nav-content">
+      <div class="brand-logo" id="btn-home-logo">
+        <span class="owl-icon">🦉</span>
+        <span class="brand-text">duo<span>math</span></span>
+      </div>
+
+      <!-- Métricas globales del alumno -->
+      <div class="stats-pills">
+        <div class="stat-pill" title="Puntos de Experiencia">
+          <span class="pill-icon">⚡</span>
+          <span id="nav-xp" class="pill-val">0 XP</span>
+        </div>
+        <div class="stat-pill" title="Coronas Ganadas">
+          <span class="pill-icon">👑</span>
+          <span id="nav-crowns" class="pill-val">0/5</span>
+        </div>
+        <div class="stat-pill hearts-pill" id="nav-hearts-wrap">
+          <span class="pill-icon">❤️</span>
+          <span id="nav-hearts" class="pill-val">3</span>
+        </div>
+      </div>
+
+      <!-- Perfil de usuario -->
+      <div class="user-control">
+        <span id="nav-user-tag" class="user-badge">Invitado</span>
+        <button id="btn-login-modal" class="btn-outline-sm">Ingresar</button>
+        <button id="btn-logout" class="btn-ghost-sm oculto">Salir</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Contenedor Principal de la App -->
+  <main class="app-container">
+
+    <!-- VISTA 1: Camino de Aprendizaje (Path con 5 Círculos) -->
+    <section id="view-path" class="view-section">
+      <div class="path-header">
+        <h1 class="path-title">Ruta de 6º de Primaria</h1>
+        <p class="path-sub">Elige un módulo para iniciar tu lección de 20 preguntas.</p>
+      </div>
+
+      <!-- Árbol de círculos -->
+      <div class="circles-path">
+        
+        <!-- Círculo 1: Sumas -->
+        <div class="circle-node-wrap">
+          <button class="circle-node btn-circle" data-theme="sumas">
+            <span class="circle-emoji">➕</span>
+          </button>
+          <div class="circle-label">
+            <strong>Sumas</strong>
+            <small>Fracciones y decimales</small>
+            <div class="crown-badge" id="badge-sumas">⚪ Pendiente</div>
+          </div>
+        </div>
+
+        <!-- Círculo 2: Restas -->
+        <div class="circle-node-wrap alt-left">
+          <button class="circle-node btn-circle" data-theme="restas">
+            <span class="circle-emoji">➖</span>
+          </button>
+          <div class="circle-label">
+            <strong>Restas</strong>
+            <small>Transformación y enteros</small>
+            <div class="crown-badge" id="badge-restas">⚪ Pendiente</div>
+          </div>
+        </div>
+
+        <!-- Círculo 3: Multiplicaciones -->
+        <div class="circle-node-wrap alt-right">
+          <button class="circle-node btn-circle" data-theme="multiplicaciones">
+            <span class="circle-emoji">✖️</span>
+          </button>
+          <div class="circle-label">
+            <strong>Multiplicaciones</strong>
+            <small>Decimales y factores</small>
+            <div class="crown-badge" id="badge-multiplicaciones">⚪ Pendiente</div>
+          </div>
+        </div>
+
+        <!-- Círculo 4: Divisiones -->
+        <div class="circle-node-wrap alt-left">
+          <button class="circle-node btn-circle" data-theme="divisiones">
+            <span class="circle-emoji">➗</span>
+          </button>
+          <div class="circle-label">
+            <strong>Divisiones</strong>
+            <small>Cocientes decimales</small>
+            <div class="crown-badge" id="badge-divisiones">⚪ Pendiente</div>
+          </div>
+        </div>
+
+        <!-- Círculo 5: Problemas Cortos -->
+        <div class="circle-node-wrap">
+          <button class="circle-node btn-circle gold-circle" data-theme="problemas">
+            <span class="circle-emoji">🧠</span>
+          </button>
+          <div class="circle-label">
+            <strong>Problemas Cortos</strong>
+            <small>Porcentajes, áreas y lógica</small>
+            <div class="crown-badge" id="badge-problemas">⚪ Pendiente</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- VISTA 2: Pantalla de Preguntas (Lección Activa) -->
+    <section id="view-quiz" class="view-section oculto">
+      
+      <!-- Barra de progreso superior dentro de la lección -->
+      <div class="quiz-top-bar">
+        <button id="btn-quit-quiz" class="btn-close-quiz" title="Abandonar lección">✕</button>
+        <div class="quiz-progress-track">
+          <div id="quiz-progress-fill" class="quiz-progress-fill"></div>
+        </div>
+        <div class="quiz-hearts-box">
+          <span class="heart-icon">❤️</span>
+          <span id="quiz-hearts-count" class="heart-val">3</span>
+        </div>
+      </div>
+
+      <div class="quiz-body">
+        <div class="question-header">
+          <span id="question-step" class="question-step-badge">Pregunta 1 de 20</span>
+          <h2 id="question-text" class="question-title">¿Cuánto es 3/4 + 1/2?</h2>
+        </div>
+
+        <!-- Opciones de respuesta múltiple (4 botones) -->
+        <div id="options-grid" class="options-grid">
+          <!-- Generadas con JS -->
+        </div>
+      </div>
+
+      <!-- Bandeja flotante inferior de confirmación -->
+      <footer id="feedback-tray" class="feedback-tray neutral">
+        <div class="tray-content">
+          <div id="feedback-msg" class="feedback-msg">
+            <!-- Icono y texto dinámico -->
+          </div>
+          <button id="btn-action" class="btn-duo btn-action">COMPROBAR</button>
+        </div>
+      </footer>
+
+    </section>
+
+    <!-- VISTA 3: Resumen Final y Puntuación -->
+    <section id="view-summary" class="view-section oculto">
+      <div class="summary-card">
+        <div id="summary-icon" class="summary-hero-icon">🏆</div>
+        <h1 id="summary-title" class="summary-title">¡Lección Completada!</h1>
+        <p id="summary-subtitle" class="summary-sub">Has finalizado las 20 preguntas del módulo.</p>
+
+        <!-- Cuadrícula de estadísticas finales -->
+        <div class="summary-grid">
+          <div class="sum-box green">
+            <span class="sum-label">Aciertos</span>
+            <span id="sum-correct" class="sum-val">20</span>
+          </div>
+          <div class="sum-box red">
+            <span class="sum-label">Errores</span>
+            <span id="sum-wrong" class="sum-val">0</span>
+          </div>
+          <div class="sum-box blue">
+            <span class="sum-label">Efectividad</span>
+            <span id="sum-percent" class="sum-val">100%</span>
+          </div>
+          <div class="sum-box yellow">
+            <span class="sum-label">Puntos XP</span>
+            <span id="sum-xp" class="sum-val">+200 XP</span>
+          </div>
+        </div>
+
+        <div class="summary-actions">
+          <button id="btn-retry" class="btn-duo btn-blue">REINICIAR JUEGO 🔁</button>
+          <button id="btn-finish-home" class="btn-duo btn-green">CONTINUAR ➔</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal de Login y Registro de Alumno -->
+  <div id="modal-login" class="modal-backdrop oculto">
+    <div class="modal-card">
+      <div class="modal-top">
+        <h3>Perfil del Alumno</h3>
+        <button id="btn-close-modal" class="btn-close">×</button>
+      </div>
+      <p class="modal-desc">Ingresa tu nombre y clave para guardar tus coronas, vidas y XP en la base de datos.</p>
+
+      <form id="form-login" onsubmit="return false;">
+        <div id="auth-error" class="auth-error-box oculto"></div>
+
+        <label for="auth-user">Nombre o Usuario</label>
+        <input type="text" id="auth-user" placeholder="Ej. Sofia26" maxlength="15" autocomplete="off">
+
+        <label for="auth-pass">Contraseña o PIN</label>
+        <input type="password" id="auth-pass" placeholder="Tu clave de acceso..." autocomplete="off">
+
+        <button type="submit" id="btn-submit-auth" class="btn-duo btn-green full-width">INGRESAR A LA BD</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+</html>
