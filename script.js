@@ -481,33 +481,101 @@ btnCloseModal.addEventListener("click", () => {
   modalLogin.classList.add("oculto");
 });
 
-formLogin.addEventListener("submit", (e) => {
+// ==========================================
+// CONTRASEÑAS
+// Nunca se guardan tal cual: se guarda un hash PBKDF2-SHA256 con una sal
+// aleatoria por alumno (Web Crypto) y al entrar se compara el hash.
+// ==========================================
+const PBKDF2_ITERACIONES = 210000;
+
+function aBase64(bytes) {
+  return btoa(String.fromCharCode(...new Uint8Array(bytes)));
+}
+
+function deBase64(texto) {
+  return Uint8Array.from(atob(texto), (c) => c.charCodeAt(0));
+}
+
+async function derivarHash(password, sal) {
+  const clave = await crypto.subtle.importKey(
+    "raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveBits"]
+  );
+  const bits = await crypto.subtle.deriveBits(
+    { name: "PBKDF2", hash: "SHA-256", salt: sal, iterations: PBKDF2_ITERACIONES },
+    clave,
+    256
+  );
+  return aBase64(bits);
+}
+
+async function crearCredencial(password) {
+  const sal = crypto.getRandomValues(new Uint8Array(16));
+  return { sal: aBase64(sal), hash: await derivarHash(password, sal) };
+}
+
+async function verificarPassword(password, credencial) {
+  if (!credencial || typeof credencial.sal !== "string" || typeof credencial.hash !== "string") {
+    return false;
+  }
+  try {
+    return (await derivarHash(password, deBase64(credencial.sal))) === credencial.hash;
+  } catch (error) {
+    return false; // sal dañada o alterada
+  }
+}
+
+function mostrarErrorAuth(mensaje) {
+  authError.textContent = mensaje;
+  authError.classList.remove("oculto");
+}
+
+let autenticando = false;
+
+formLogin.addEventListener("submit", async (e) => {
   e.preventDefault();
+  if (autenticando) return;
   const u = authUser.value.trim().toLowerCase();
   const p = authPass.value.trim();
 
   if (!u || !p) {
-    authError.textContent = "Completa el usuario y la contraseña.";
-    authError.classList.remove("oculto");
+    mostrarErrorAuth("Completa el usuario y la contraseña.");
+    return;
+  }
+  if (!window.crypto || !crypto.subtle) {
+    mostrarErrorAuth("Tu navegador no permite guardar la contraseña de forma segura. Abre la página con https.");
     return;
   }
 
-  const db = cargarBaseDatos();
+  autenticando = true;
+  try {
+    const db = cargarBaseDatos();
 
-  // Validar si existe o registrar automáticamente
-  if (db[u]) {
-    if (db[u].pass !== p) {
-      authError.textContent = "Contraseña incorrecta para @" + u;
-      authError.classList.remove("oculto");
-      return;
+    // Validar si existe o registrar automáticamente
+    if (db[u]) {
+      if (typeof db[u].pass === "string") {
+        // Cuenta creada antes de este cambio: se compara una última vez en
+        // texto plano y, si coincide, se reemplaza por el hash.
+        if (db[u].pass !== p) {
+          mostrarErrorAuth("Contraseña incorrecta para @" + u);
+          return;
+        }
+        db[u].credencial = await crearCredencial(p);
+        delete db[u].pass;
+        guardarBaseDatos(db);
+      } else if (!(await verificarPassword(p, db[u].credencial))) {
+        mostrarErrorAuth("Contraseña incorrecta para @" + u);
+        return;
+      }
+    } else {
+      db[u] = {
+        credencial: await crearCredencial(p),
+        xp: 0,
+        coronas: {}
+      };
+      guardarBaseDatos(db);
     }
-  } else {
-    db[u] = {
-      pass: p,
-      xp: 0,
-      coronas: {}
-    };
-    guardarBaseDatos(db);
+  } finally {
+    autenticando = false;
   }
 
   localStorage.setItem(SESSION_NAME, u);
